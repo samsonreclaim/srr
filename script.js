@@ -200,7 +200,26 @@ contactForm.addEventListener('submit', async (e) => {
         }
 
     } catch (error) {
-        showFormMessage('Oops! Something went wrong. Please try again.', 'error');
+        // Formspree failed — fallback to mailto
+        const name    = formData.get('name') || '';
+        const email   = formData.get('email') || '';
+        const subject = formData.get('subject') || 'Enquiry from Website';
+        const message = formData.get('message') || '';
+
+        const body = encodeURIComponent(
+            `Name: ${name}\nEmail: ${email}\n\n${message}`
+        );
+        const mailtoLink = `mailto:info@samsonreclaimrubbers.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+
+        showFormMessage(
+            'Could not send automatically. Your email app will open — please send it from there.',
+            'error'
+        );
+
+        setTimeout(() => {
+            window.location.href = mailtoLink;
+        }, 1500);
+
     } finally {
         // Reset button
         submitBtn.textContent = originalText;
